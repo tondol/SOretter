@@ -14,5 +14,3 @@ $config = array(
 		'callback_uri' => 'https://tmp.tondol.com/soretter/login.php?verifying=true',
 	),
 );
-
-?>
