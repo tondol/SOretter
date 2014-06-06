@@ -1,0 +1,18 @@
+<?php
+
+// ini_set('display_errors', true);
+define('SYSTEM_DIR', dirname(__FILE__));
+ini_set('include_path', ini_get('include_path') . ':' . SYSTEM_DIR . '/twitteroauth/twitteroauth');
+date_default_timezone_set('Asia/Tokyo');
+
+require_once 'twitteroauth.php';
+
+$config = array(
+	'twitter' => array(
+		'consumer_key' => '',
+		'consumer_secret' => '',
+		'callback_uri' => 'https://tmp.tondol.com/soretter/login.php?verifying=true',
+	),
+);
+
+?>
