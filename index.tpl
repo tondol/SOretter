@@ -18,28 +18,32 @@
 <?php endif; ?>
 </header>
 
-<div id="tweets"></div>
+<div id="statuses"></div>
 
+<?php if ($logged_in): ?>
 <script type="text/javascript">
 $(function () {
 	xhr = new XMLHttpRequest();
-	xhr.multipart = true;
-	xhr.open('get', 'https://tmp.tondol.com/soretter/stream.php', true);
-	xhr.onreadystatechange = function() {
-		if (xhr.readyState == 3) {
-			var lines = (xhr.responseText).split("\n");
-			var status = JSON.parse(lines[lines.length - 2]);
-			var node = getStatusNode(status);
-			if (node != undefined) {
-				$("#tweets").prepend(node.hide().fadeIn());
+	xhr.open('GET', 'https://tmp.tondol.com/soretter/stream.php', true);
+	xhr.send(null);
+
+	var length = 0;
+	setInterval(function() {
+		if (length != xhr.responseText.length) {
+			length = xhr.responseText.length;
+			var lines = xhr.responseText.split("\n"),
+				line = lines[lines.length - 2],
+				o = JSON.parse(line);
+			if ('text' in o) {
+				$("#statuses").prepend(getStatusNode(o).hide().fadeIn());
+			} else {
+				$("#statuses").prepend($("<dl></dl>").append($("<dt>JSON</dt>")));
 			}
 		}
-	}
-<?php if ($logged_in): ?>
-	xhr.send(null);
-<?php endif; ?>
+	}, 500);
 });
 </script>
+<?php endif; ?>
 
 </body>
 </html>
