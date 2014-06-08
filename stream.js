@@ -105,7 +105,7 @@ function getStatusNode(o) {
 		var dt = $("<dt></dt>");
 		var dd1 = $("<dd></dd>").html(linkify(r));
 		var dd2 = $("<dd></dd>");
-		dt.appendArray([img1, " ", link1, " (RT: ", img2, " ", link2, ")"]);
+		dt.appendArray([img1, " ", link1, " (RT by ", img2, " ", link2, ")"]);
 		dd2.appendArray([link3, " via ", o['source']]);
 		dl.appendArray([dt, dd1, dd2]);
 	} else {
