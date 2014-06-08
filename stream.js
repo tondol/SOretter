@@ -43,6 +43,39 @@ function getUserUri(o) {
 function getPermalinkUri(o) {
 	return "https://twitter.com/" + h(o['user']['screen_name']) + "/status/" + h(o['id_str']);
 }
+// https://gist.github.com/xendoc/4129696
+function strlen(str) {
+  var ret = 0;
+  for (var i = 0; i < str.length; i++,ret++) {
+    var upper = str.charCodeAt(i);
+    var lower = str.length > (i + 1) ? str.charCodeAt(i + 1) : 0;
+    if (isSurrogatePair(upper, lower)) {
+      i++;
+    }
+  }
+  return ret;
+}
+function substring(str, begin, end) {
+  var ret = '';
+  for (var i = 0, len = 0; i < str.length; i++, len++) {
+    var upper = str.charCodeAt(i);
+    var lower = str.length > (i + 1) ? str.charCodeAt(i + 1) : 0;
+    var s = "";
+    if(isSurrogatePair(upper, lower)) {
+      i++;
+      s = String.fromCharCode(upper, lower);
+    } else {
+      s = String.fromCharCode(upper);
+    }
+    if (begin <= len && len < end) {
+      ret += s;
+    }
+  }
+  return ret;
+}
+function isSurrogatePair(upper, lower) {
+  return 0xD800 <= upper && upper <= 0xDBFF && 0xDC00 <= lower && lower <= 0xDFFF;
+}
 // https://gist.github.com/wadey/442463
 function linkify(o) {
 	var s = o['text'];
@@ -71,21 +104,21 @@ function linkify(o) {
 	}
 	var i = 0, last = 0;
 	var result = '';
-	for (var i=0;i<s.length;i++) {
+	for (var i=0;i<strlen(s);i++) {
 		var index = map[i];
 		if (index != undefined) {
 			var end = index[0];
 			var f = index[1];
 			if (i != last) {
-				result += h(s.substring(last, i));	
+				result += h(substring(s, last, i));	
 			}
-			result += f(s.substring(i, end));
+			result += f(substring(s, i, end));
 			i = end - 1;
 			last = end;
 		}
 	}
 	if (i != last) {
-		result += h(s.substring(last, i));
+		result += h(substring(s, last, i));
 	}
 	return result;
 }
