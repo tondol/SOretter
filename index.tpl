@@ -23,22 +23,34 @@
 <?php if ($logged_in): ?>
 <script type="text/javascript">
 $(function () {
-	xhr = new XMLHttpRequest();
-	xhr.open('GET', 'https://tmp.tondol.com/soretter/stream.php', true);
-	xhr.send(null);
-
+	var connect = function () {
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', 'https://tmp.tondol.com/soretter/stream.php', true);
+		xhr.send(null);
+		return xhr;
+	};
+	var xhr = connect();
 	var length = 0;
 	setInterval(function() {
-		if (length != xhr.responseText.length) {
-			length = xhr.responseText.length;
-			var lines = xhr.responseText.split("\n"),
-				line = lines[lines.length - 2],
-				o = JSON.parse(line);
-			if ('text' in o) {
-				$("#statuses").prepend(getStatusNode(o).hide().fadeIn());
-			} else {
-				$("#statuses").prepend($("<dl></dl>").append($("<dt>JSON</dt>")));
+		//sleep randomly and reconnect
+		if (xhr.readyState == 4) {
+			if (Math.random() < 0.2) {
+				xhr = connect();
 			}
+			return;
+		}
+		//not modified
+		if (xhr.responseText.length == 0 || length == xhr.responseText.length) {
+			return;
+		}
+		length = xhr.responseText.length;
+		var lines = xhr.responseText.split("\n");
+		var line = lines[lines.length - 2];
+		var o = JSON.parse(line);
+		if ('text' in o) {
+			$("#statuses").prepend(getStatusNode(o).hide().fadeIn());
+		} else {
+			$("#statuses").prepend($("<dl></dl>").append($("<dt>JSON</dt>")));
 		}
 	}, 500);
 });
