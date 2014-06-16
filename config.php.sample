@@ -1,7 +1,7 @@
 <?php
 
-// ini_set('display_errors', true);
 define('SYSTEM_DIR', dirname(__FILE__));
+ini_set('display_errors', false);
 ini_set('include_path', ini_get('include_path') . ':' . SYSTEM_DIR . '/twitteroauth/twitteroauth');
 date_default_timezone_set('Asia/Tokyo');
 

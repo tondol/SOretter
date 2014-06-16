@@ -1,20 +1,21 @@
 <?php
 
 require_once dirname(__FILE__) . '/config.php';
+require_once dirname(__FILE__) . '/utilities.php';
 
 session_start();
 
 // redirected from twitter
-if ($_GET['verifying'] != '')
+if (!empty($_GET['verifying']))
 {
-	if ($_GET['oauth_verifier'] != '') {
+	if (!empty($_GET['oauth_verifier'])) {
 		$connection = new TwitterOAuth(
 			$config['twitter']['consumer_key'], $config['twitter']['consumer_secret'],
 			$_SESSION['oauth_token'], $_SESSION['oauth_token_secret']);
 
 		$token_credentials = $connection->getAccessToken($_GET['oauth_verifier']);
 
-		if ($token_credentials['oauth_token'] != '') {
+		if (!empty($token_credentials['oauth_token'])) {
 			session_regenerate_id();
 			$_SESSION['token_credentials'] = $token_credentials;
 
