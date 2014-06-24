@@ -2,34 +2,15 @@
 	margin: 0;
 	padding: 0;
 }
-body {
-	background: #aaaaaa;
-}
 header {
 	margin: 5px;
 }
-dt img {
-	vertical-align: middle;
-}
 dl {
-	margin: 5px;
-	border: solid 2px #222222;
-	border-radius: 6px;
-	background: #ffffff;
-}
-dt {
 	margin: 5px;
 }
 dd {
-	margin: 5px;
+	margin-left: 40px;
 }
-a:link {
-	color: #ff7040;
-}
-a:visited {
-	color: #884070;
-}
-a:hover {
-	color: #ff0080;
-	text-decoration: none;
+dt img {
+	display: none;
 }

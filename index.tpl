@@ -10,8 +10,8 @@
 
 <header>
 <?php if ($logged_in): ?>
-	<h1>SOretter: Logged in</h1>
-	<p>SOretterのSはStreamingのS。<a href="./logout.php">ログアウトする？</a></p>
+	<h1>SSOretter: Logged in</h1>
+	<p>SSOretterのSはStreamingとSimpleのS。<a href="./logout.php">ログアウトする？</a></p>
 <?php else: ?>
 	<h1>SOretter: Not logged in</h1>
 	<p><a href="./login.php">ログインする？</a></p>
