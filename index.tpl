@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>SOretter</title>
+<title>SSOretter</title>
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <script type="text/javascript" src="./stream.js"></script>
 <link rel="stylesheet" type="text/css" href="./fonts-min.css" />
