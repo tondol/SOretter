@@ -151,12 +151,14 @@ function getStatusFooterNode(o) {
 			'action': 'favorite',
 			'id': o['id_str']
 		});
+		return false;
 	});
 	var retweet = $("<a></a>").attr('href', "#").text("RT").click(function() {
 		$.post('action.php', {
 			'action': 'retweet',
 			'id': o['id_str']
 		});
+		return false;
 	});
 	dd.appendArray([link, " via ", o['source'], " ", favorite, " ", retweet]);
 	return dd;
