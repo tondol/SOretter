@@ -33,8 +33,8 @@ $(function () {
 	var length = 0;
 	setInterval(function() {
 		//sleep randomly and reconnect
-		if (xhr.readyState == 4) {
-			if (Math.random() < 0.2) {
+		if (xhr.readyState == 2 || xhr.readyState == 4) {
+			if (Math.random() < 0.1) {
 				xhr = connect();
 			}
 			return;

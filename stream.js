@@ -122,36 +122,57 @@ function linkify(o) {
 	}
 	return result;
 }
+
+function getStatusHeaderNode(o) {
+	var dt = $("<dt></dt>");
+	var img = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(o['user']['profile_image_url']));
+	var link = $("<a></a>").attr('href', getUserUri(o)).text(o['user']['screen_name']);
+	dt.appendArray([img, " ", link]);
+	return dt;
+}
+function getRetweetedStatusHeaderNode(o) {
+	var r = o['retweeted_status'];
+	var dt = $("<dt></dt>");
+	var img1 = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(r['user']['profile_image_url']));
+	var img2 = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(o['user']['profile_image_url']));
+	var link1 = $("<a></a>").attr('href', getUserUri(r)).text(r['user']['screen_name']);
+	var link2 = $("<a></a>").attr('href', getUserUri(o)).text(o['user']['screen_name']);
+	dt.appendArray([img1, " ", link1, " (RT by ", img2, " ", link2, ")"]);
+	return dt;
+}
+function getStatusBodyNode(o) {
+	return $("<dd></dd>").html(linkify(o));
+}
+function getStatusFooterNode(o) {
+	var dd = $("<dd></dd>");
+	var link = $("<a></a>").attr('href', getPermalinkUri(o)).text(formatCreatedAt(o['created_at']));
+	var favorite = $("<a></a>").attr('href', "#").text("Fav").click(function() {
+		$.post('action.php', {
+			'action': 'favorite',
+			'id': r['id_str']
+		});
+	});
+	var retweet = $("<a></a>").attr('href', "#").text("RT").click(function() {
+		$.post('action.php', {
+			'action': 'retweet',
+			'id': r['id_str']
+		});
+	});
+	dd.appendArray([link, " via ", o['source'], " ", favorite, " ", retweet]);
+	return dd;
+}
 function getStatusNode(o) {
-	if (!('text' in o)) {
-		return;
-	}
-	var dl = undefined;
 	if ('retweeted_status' in o) {
 		var r = o['retweeted_status'];
-		dl = $("<dl></dl>");
-		var img1 = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(r['user']['profile_image_url']));
-		var img2 = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(o['user']['profile_image_url']));
-		var link1 = $("<a></a>").attr('href', getUserUri(r)).text(r['user']['screen_name']);
-		var link2 = $("<a></a>").attr('href', getUserUri(o)).text(o['user']['screen_name']);
-		var link3 = $("<a></a>").attr('href', getPermalinkUri(o)).text(formatCreatedAt(r['created_at']));
-		var dt = $("<dt></dt>");
-		var dd1 = $("<dd></dd>").html(linkify(r));
-		var dd2 = $("<dd></dd>");
-		dt.appendArray([img1, " ", link1, " (RT by ", img2, " ", link2, ")"]);
-		dd2.appendArray([link3, " via ", o['source']]);
-		dl.appendArray([dt, dd1, dd2]);
+		var header = getRetweetedStatusHeaderNode(o);
+		var body = getStatusBodyNode(r);
+		var footer = getStatusFooterNode(r);
 	} else {
-		dl = $("<dl></dl>");
-		var dt = $("<dt></dt>");
-		var dd1 = $("<dd></dd>").html(linkify(o));
-		var dd2 = $("<dd></dd>");
-		var img = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(o['user']['profile_image_url']));
-		var link1 = $("<a></a>").attr('href', getUserUri(o)).text(o['user']['screen_name']);
-		var link2 = $("<a></a>").attr('href', getPermalinkUri(o)).text(formatCreatedAt(o['created_at']));
-		dt.appendArray([img, " ", link1]);
-		dd2.appendArray([link2, " via ", o['source']]);
-		dl.appendArray([dt, dd1, dd2]);
+		var header = getStatusHeaderNode(o);
+		var body = getStatusBodyNode(o);
+		var footer = getStatusFooterNode(o);
 	}
+	var dl = $("<dl></dl>");
+	dl.appendArray([header, body, footer]);
 	return dl;
 }
