@@ -149,13 +149,13 @@ function getStatusFooterNode(o) {
 	var favorite = $("<a></a>").attr('href', "#").text("Fav").click(function() {
 		$.post('action.php', {
 			'action': 'favorite',
-			'id': r['id_str']
+			'id': o['id_str']
 		});
 	});
 	var retweet = $("<a></a>").attr('href', "#").text("RT").click(function() {
 		$.post('action.php', {
 			'action': 'retweet',
-			'id': r['id_str']
+			'id': o['id_str']
 		});
 	});
 	dd.appendArray([link, " via ", o['source'], " ", favorite, " ", retweet]);
