@@ -26,7 +26,8 @@ function formatCreatedAt(s) {
 		var sign = useSign ? (n < 0 ? '-' : '+') : '';
 		return sign + ('0' + Math.abs(n)).slice(-2);
 	}
-	var d = new Date(Date.parse(s));
+	var t = s.split(' ');
+	var d = new Date(Date.parse(t[1] + ' ' + t[2] + ', ' + t[5] + ' ' + t[3] + ' UTC'));
 	var offset = d.getTimezoneOffset();
 	return d.getFullYear() + "-" +
 		pad(d.getMonth() + 1) + "-" +
