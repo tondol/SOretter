@@ -99,8 +99,8 @@ function linkify(o) {
 					h(entry.text) + "</a>";
 		}];
 	});
-	if ('media' in o['entities']) {
-		$.each(o['entities']['media'], function (i, entry) {
+	if ('extended_entities' in o && 'media' in o['extended_entities']) {
+		$.each(o['extended_entities']['media'], function (i, entry) {
 			map[entry.indices[0]] = [entry.indices[1], function (s) {
 				return "<a href=\""+ h(entry.expanded_url) + "\">" +
 						h(entry.display_url) + "</a>";
@@ -183,13 +183,14 @@ function getStatusFooterNode(o) {
 	return dd;
 }
 function getStatusMediaNode(o) {
-	if ('media' in o['entities']) {
+	if ('extended_entities' in o && 'media' in o['extended_entities']) {
 		var dd = $("<dd></dd>");
-		return dd.appendArray($.map(o['entities']['media'], function(entry, i) {
+		var links = $.map(o['extended_entities']['media'], function(entry, i) {
 			var img = $("<img />").attr('src', entry['media_url_https'] + ":thumb");
 			var link = $("<a></a>").attr('href', entry['media_url_https'] + ":large");
 			return link.append(img);
-		}));
+		});
+		return dd.appendArray(links);
 	} else {
 		return undefined;
 	}
