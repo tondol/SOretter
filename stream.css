@@ -10,11 +10,12 @@ header {
 dl {
 	margin: 5px;
 }
-dt img {
-	display: none;
-}
 dd {
 	margin-left: 40px;
+}
+dt img,
+dd img {
+	display: none;
 }
 
 .mention {
