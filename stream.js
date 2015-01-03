@@ -38,8 +38,8 @@ function formatCreatedAt(s) {
 		pad(-offset / 60, true) + ":" +
 		pad(-offset % 60);
 }
-function getUserUri(o) {
-	return "https://twitter.com/" + h(o['user']['screen_name']);
+function getUserUri(u) {
+	return "https://twitter.com/" + h(u['screen_name']);
 }
 function getPermalinkUri(o) {
 	return "https://twitter.com/" + h(o['user']['screen_name']) + "/status/" + h(o['id_str']);
@@ -83,23 +83,27 @@ function linkify(o) {
 	var map = {};
 	$.each(o['entities']['urls'], function (i, entry) {
 		map[entry.indices[0]] = [entry.indices[1], function (s) {
-			return "<a href=\""+ h(entry.expanded_url) + "\">" + h(entry.display_url) + "</a>";
+			return "<a href=\""+ h(entry.expanded_url) + "\">" +
+					h(entry.display_url) + "</a>";
 		}];
 	});
 	$.each(o['entities']['user_mentions'], function (i, entry) {
 		map[entry.indices[0]] = [entry.indices[1], function (s) {
-			return "<a href=\"https://twitter.com/" + h(entry.screen_name) + "\">@" + h(entry.screen_name) + "</a>";
+			return "<a href=\"https://twitter.com/" + h(entry.screen_name) + "\">@" +
+					h(entry.screen_name) + "</a>";
 		}];
 	});
 	$.each(o['entities']['hashtags'], function (i, entry) {
 		map[entry.indices[0]] = [entry.indices[1], function (s) {
-			return "<a href=\"https://twitter.com/search?q=#" + h(entry.text) + "\">#" + h(entry.text) + "</a>";
+			return "<a href=\"https://twitter.com/search?q=#" + h(entry.text) + "\">#" +
+					h(entry.text) + "</a>";
 		}];
 	});
 	if ('media' in o['entities']) {
 		$.each(o['entities']['media'], function (i, entry) {
 			map[entry.indices[0]] = [entry.indices[1], function (s) {
-				return "<a href=\""+ h(entry.expanded_url) + "\">" + h(entry.display_url) + "</a>";
+				return "<a href=\""+ h(entry.expanded_url) + "\">" +
+						h(entry.display_url) + "</a>";
 			}];
 		});
 	}
@@ -127,7 +131,7 @@ function linkify(o) {
 function getStatusHeaderNode(o) {
 	var dt = $("<dt></dt>");
 	var img = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(o['user']['profile_image_url']));
-	var link = $("<a></a>").attr('href', getUserUri(o)).text(o['user']['screen_name']);
+	var link = $("<a></a>").attr('href', getUserUri(o['user'])).text(o['user']['screen_name']);
 	dt.appendArray([img, " ", link]);
 	return dt;
 }
@@ -136,9 +140,18 @@ function getRetweetedStatusHeaderNode(o) {
 	var dt = $("<dt></dt>");
 	var img1 = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(r['user']['profile_image_url']));
 	var img2 = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(o['user']['profile_image_url']));
-	var link1 = $("<a></a>").attr('href', getUserUri(r)).text(r['user']['screen_name']);
-	var link2 = $("<a></a>").attr('href', getUserUri(o)).text(o['user']['screen_name']);
+	var link1 = $("<a></a>").attr('href', getUserUri(r['user'])).text(r['user']['screen_name']);
+	var link2 = $("<a></a>").attr('href', getUserUri(o['user'])).text(o['user']['screen_name']);
 	dt.appendArray([img1, " ", link1, " (RT by ", img2, " ", link2, ")"]);
+	return dt;
+}
+function getFavoritedStatusHeaderNode(o, caption) {
+	var dt = $("<dt></dt>");
+	var img1 = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(o['target']['profile_image_url']));
+	var img2 = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(o['source']['profile_image_url']));
+	var link1 = $("<a></a>").attr('href', getUserUri(o['source'])).text(o['target']['screen_name']);
+	var link2 = $("<a></a>").attr('href', getUserUri(o['target'])).text(o['source']['screen_name']);
+	dt.appendArray([img1, " ", link1, " (" + caption + " by ", img2, " ", link2, ")"]);
 	return dt;
 }
 function getStatusBodyNode(o) {
@@ -177,5 +190,31 @@ function getStatusNode(o) {
 	}
 	var dl = $("<dl></dl>");
 	dl.appendArray([header, body, footer]);
+	if ('retweeted_status' in o) {
+		dl.addClass('retweeted-status');
+	} else {
+		dl.addClass('status');
+	}
+	if ('in_reply_to_user_id' in o && o['in_reply_to_user_id']) {
+		dl.addClass('mention');
+	}
+	return dl;
+}
+function getFavoritedStatusNode(o) {
+	var header = getFavoritedStatusHeaderNode(o, "Favorited");
+	var body = getStatusBodyNode(o['target_object']);
+	var footer = getStatusFooterNode(o['target_object']);
+	var dl = $("<dl></dl>");
+	dl.appendArray([header, body, footer]);
+	dl.addClass('favorited-status');
+	return dl;
+}
+function getUnfavoritedStatusNode(o) {
+	var header = getFavoritedStatusHeaderNode(o, "Unfavorited");
+	var body = getStatusBodyNode(o['target_object']);
+	var footer = getStatusFooterNode(o['target_object']);
+	var dl = $("<dl></dl>");
+	dl.appendArray([header, body, footer]);
+	dl.addClass('unfavorited-status');
 	return dl;
 }

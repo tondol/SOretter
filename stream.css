@@ -2,15 +2,14 @@
 	margin: 0;
 	padding: 0;
 }
+
 body {
 	background: #aaaaaa;
 }
 header {
 	margin: 5px;
 }
-dt img {
-	vertical-align: middle;
-}
+
 dl {
 	margin: 5px;
 	border: solid 2px #222222;
@@ -20,9 +19,13 @@ dl {
 dt {
 	margin: 5px;
 }
+dt img {
+	vertical-align: middle;
+}
 dd {
 	margin: 5px;
 }
+
 a:link {
 	color: #ff7040;
 }
@@ -32,4 +35,15 @@ a:visited {
 a:hover {
 	color: #ff0080;
 	text-decoration: none;
+}
+
+.mention {
+	background: #ffdddd;
+}
+.retweeted-status {
+	background: #ddffdd;
+}
+.favorited-status,
+.unfavorited-status {
+	background: #ffffdd;
 }

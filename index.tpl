@@ -49,6 +49,10 @@ $(function () {
 		var o = JSON.parse(line);
 		if ('text' in o) {
 			$("#statuses").prepend(getStatusNode(o).hide().fadeIn());
+		} else if ('event' in o && o['event'] == 'favorite') {
+			$("#statuses").prepend(getFavoritedStatusNode(o).hide().fadeIn());
+		} else if ('event' in o && o['event'] == 'unfavorite') {
+			$("#statuses").prepend(getUnfavoritedStatusNode(o).hide().fadeIn());
 		} else {
 			$("#statuses").prepend($("<dl></dl>").append($("<dt>JSON</dt>")));
 		}
