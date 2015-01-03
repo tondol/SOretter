@@ -3,11 +3,11 @@ function h(s) {
 		'<': '&lt;',
 		'>': '&gt;',
 		'&': '&amp;',
-		'\'' :'&#39;',
-		'"' :'&quot;'
+		"'": '&#39;',
+		'"': '&quot;'
 	};
 	function f(s) { return map[s]; }
-	return s.replace(/<|>|&|'|"/g, f);
+	return s.replace(/&(?!lt;)(?!gt;)(?!amp;)|'|"/g, f);
 }
 (function ($) {
 	$.prototype.appendArray = function (array) {
@@ -130,7 +130,8 @@ function linkify(o) {
 
 function getStatusHeaderNode(o) {
 	var dt = $("<dt></dt>");
-	var img = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(o['user']['profile_image_url']));
+	var img = $("<img />").attr('width', 24).attr('height', 24)
+			.attr('src', h(o['user']['profile_image_url_https']));
 	var link = $("<a></a>").attr('href', getUserUri(o['user'])).text(o['user']['screen_name']);
 	dt.appendArray([img, " ", link]);
 	return dt;
@@ -138,8 +139,10 @@ function getStatusHeaderNode(o) {
 function getRetweetedStatusHeaderNode(o) {
 	var r = o['retweeted_status'];
 	var dt = $("<dt></dt>");
-	var img1 = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(r['user']['profile_image_url']));
-	var img2 = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(o['user']['profile_image_url']));
+	var img1 = $("<img />").attr('width', 24).attr('height', 24)
+			.attr('src', h(r['user']['profile_image_url_https']));
+	var img2 = $("<img />").attr('width', 24).attr('height', 24)
+			.attr('src', h(o['user']['profile_image_url_https']));
 	var link1 = $("<a></a>").attr('href', getUserUri(r['user'])).text(r['user']['screen_name']);
 	var link2 = $("<a></a>").attr('href', getUserUri(o['user'])).text(o['user']['screen_name']);
 	dt.appendArray([img1, " ", link1, " (RT by ", img2, " ", link2, ")"]);
@@ -147,8 +150,10 @@ function getRetweetedStatusHeaderNode(o) {
 }
 function getFavoritedStatusHeaderNode(o, caption) {
 	var dt = $("<dt></dt>");
-	var img1 = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(o['target']['profile_image_url']));
-	var img2 = $("<img />").attr('width', 24).attr('height', 24).attr('src', h(o['source']['profile_image_url']));
+	var img1 = $("<img />").attr('width', 24).attr('height', 24)
+			.attr('src', h(o['target']['profile_image_url_https']));
+	var img2 = $("<img />").attr('width', 24).attr('height', 24)
+			.attr('src', h(o['source']['profile_image_url_https']));
 	var link1 = $("<a></a>").attr('href', getUserUri(o['source'])).text(o['target']['screen_name']);
 	var link2 = $("<a></a>").attr('href', getUserUri(o['target'])).text(o['source']['screen_name']);
 	dt.appendArray([img1, " ", link1, " (" + caption + " by ", img2, " ", link2, ")"]);
@@ -177,19 +182,32 @@ function getStatusFooterNode(o) {
 	dd.appendArray([link, " via ", o['source'], " ", favorite, " ", retweet]);
 	return dd;
 }
+function getStatusMediaNode(o) {
+	if ('media' in o['entities']) {
+		var dd = $("<dd></dd>");
+		return dd.appendArray($.map(o['entities']['media'], function(entry, i) {
+			var img = $("<img />").attr('src', entry['media_url_https'] + ":thumb");
+			var link = $("<a></a>").attr('href', entry['media_url_https'] + ":large");
+			return link.append(img);
+		}));
+	} else {
+		return undefined;
+	}
+}
 function getStatusNode(o) {
 	if ('retweeted_status' in o) {
 		var r = o['retweeted_status'];
 		var header = getRetweetedStatusHeaderNode(o);
 		var body = getStatusBodyNode(r);
 		var footer = getStatusFooterNode(r);
+		var media = getStatusMediaNode(r);
 	} else {
 		var header = getStatusHeaderNode(o);
 		var body = getStatusBodyNode(o);
 		var footer = getStatusFooterNode(o);
+		var media = getStatusMediaNode(o);
 	}
-	var dl = $("<dl></dl>");
-	dl.appendArray([header, body, footer]);
+	var dl = $("<dl></dl>").appendArray([header, body, media, footer]);
 	if ('retweeted_status' in o) {
 		dl.addClass('retweeted-status');
 	} else {
@@ -204,8 +222,8 @@ function getFavoritedStatusNode(o) {
 	var header = getFavoritedStatusHeaderNode(o, "Favorited");
 	var body = getStatusBodyNode(o['target_object']);
 	var footer = getStatusFooterNode(o['target_object']);
-	var dl = $("<dl></dl>");
-	dl.appendArray([header, body, footer]);
+	var media = getStatusMediaNode(o['target_object']);
+	var dl = $("<dl></dl>").appendArray([header, body, media, footer]);
 	dl.addClass('favorited-status');
 	return dl;
 }
@@ -213,8 +231,8 @@ function getUnfavoritedStatusNode(o) {
 	var header = getFavoritedStatusHeaderNode(o, "Unfavorited");
 	var body = getStatusBodyNode(o['target_object']);
 	var footer = getStatusFooterNode(o['target_object']);
-	var dl = $("<dl></dl>");
-	dl.appendArray([header, body, footer]);
+	var media = getStatusMediaNode(o['target_object']);
+	var dl = $("<dl></dl>").appendArray([header, body, media, footer]);
 	dl.addClass('unfavorited-status');
 	return dl;
 }
