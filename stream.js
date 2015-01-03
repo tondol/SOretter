@@ -195,7 +195,7 @@ function getStatusNode(o) {
 	} else {
 		dl.addClass('status');
 	}
-	if ('in_reply_to_user_id' in o && o['in_reply_to_user_id']) {
+	if ('is_mention' in o) {
 		dl.addClass('mention');
 	}
 	return dl;
