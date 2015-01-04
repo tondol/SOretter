@@ -187,7 +187,7 @@ function getStatusMediaNode(o) {
 		var dd = $("<dd></dd>");
 		var links = $.map(o['extended_entities']['media'], function(entry, i) {
 			var img = $("<img />").attr('src', entry['media_url_https'] + ":thumb");
-			var link = $("<a></a>").attr('href', entry['media_url_https'] + ":large");
+			var link = $("<a></a>").attr('href', entry['media_url_https'] + ":orig");
 			return link.append(img);
 		});
 		return dd.appendArray(links);
