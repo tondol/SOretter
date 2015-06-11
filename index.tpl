@@ -46,28 +46,38 @@ $(function () {
 		}
 		//output new entries
 		var lines = xhr.responseText.split("\n");
-		//3*n+0: n-th content length
-		//3*n+1: n-th content body
+		//2*i+0: n-th content length
+		//2*i+1: n-th content body
 		if (latest == undefined) {
 			var from = 1;
 		} else {
-			for (var from = lines.length - 3; ; from -= 3) {
-				if (lines[from] == latest) {
-					from += 3;
+			for (var from = lines.length - 2; ; from -= 2) {
+				if (lines[from] == latest || from < 1) {
+					from += 2;
 					break;
 				}
 			}
 		}
-		for (var to = lines.length - 3; from <= to; from += 3) {
+		console.log("from=#" + from + ", to=#" + (lines.length - 2));
+		for (var to = lines.length - 2; from <= to; from += 2) {
 			var o = JSON.parse(lines[from]);
 			if ('text' in o) {
 				$("#statuses").prepend(getStatusNode(o).hide().fadeIn());
-			} else if ('event' in o && o['event'] == 'favorite') {
-				$("#statuses").prepend(getFavoritedStatusNode(o).hide().fadeIn());
-			} else if ('event' in o && o['event'] == 'unfavorite') {
-				$("#statuses").prepend(getUnfavoritedStatusNode(o).hide().fadeIn());
+			} else if ('event' in o) {
+				if (o['event'] == 'favorite') {
+					$("#statuses").prepend(getFavoritedStatusNode(o).hide().fadeIn());
+				} else if (o['event'] == 'unfavorite') {
+					$("#statuses").prepend(getUnfavoritedStatusNode(o).hide().fadeIn());
+				} else {
+					var dt = $("<dt>" + o['event'] + "</dt>");
+					$("#statuses").prepend($("<dl></dl>").append(dt));
+				}
+			} else if ('delete' in o) {
+				var dt = $("<dt>delete</dt>");
+				$("#statuses").prepend($("<dl></dl>").append(dt));
 			} else {
-				$("#statuses").prepend($("<dl></dl>").append($("<dt>JSON</dt>")));
+				var dt = $("<dt>unsupported</dt>");
+				$("#statuses").prepend($("<dl></dl>").append(dt));
 			}
 		}
 		latest = lines[to];
