@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 <title>SOretter</title>
@@ -45,8 +46,7 @@ $(function () {
 		}
 		length = xhr.responseText.length;
 		var lines = xhr.responseText.split("\n");
-		var line = lines[lines.length - 2];
-		var o = JSON.parse(line);
+		var o = JSON.parse(lines[lines.length - 3]);
 		if ('text' in o) {
 			$("#statuses").prepend(getStatusNode(o).hide().fadeIn());
 		} else if ('event' in o && o['event'] == 'favorite') {

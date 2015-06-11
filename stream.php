@@ -19,16 +19,20 @@ $connection = new TwitterOAuth(
 session_write_close();
 
 header('Transfer-Encoding', 'chunked');
-header('Content-Type', 'application/octet-stream');
 ob_flush(); flush();
 
 $user = $connection->get('account/verify_credentials');
 
 $connection->stream('https://userstream.twitter.com/1.1/user.json', array(), function ($response) use ($user) {
+	if (connection_aborted()) {
+		exit(1);
+	}
 	if (isset($response->in_reply_to_user_id) && $response->in_reply_to_user_id == $user->id) {
 		$response = (object)array_merge((array)$response, array('is_mention' => true));
 	}
-	echo json_encode($response) . "\r\n";
+	$chunk = json_encode($response);
+	echo sprintf("%x", strlen($chunk)) . "\r\n";
+	echo $chunk . "\r\n\r\n";
 	ob_flush(); flush();
 	return true;
 });
