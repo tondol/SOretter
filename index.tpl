@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 <title>SSOretter</title>
@@ -30,32 +31,46 @@ $(function () {
 		return xhr;
 	};
 	var xhr = connect();
-	var length = 0;
+	var latest = undefined;
 	setInterval(function() {
-		//sleep randomly and reconnect
+		//closed; retry after random sleep
 		if (xhr.readyState == 2 || xhr.readyState == 4) {
 			if (Math.random() < 0.1) {
 				xhr = connect();
 			}
 			return;
 		}
-		//not modified
-		if (xhr.responseText.length == 0 || length == xhr.responseText.length) {
+		//response is empty
+		if (xhr.responseText.length == 0) {
 			return;
 		}
-		length = xhr.responseText.length;
+		//output new entries
 		var lines = xhr.responseText.split("\n");
-		var line = lines[lines.length - 2];
-		var o = JSON.parse(line);
-		if ('text' in o) {
-			$("#statuses").prepend(getStatusNode(o).hide().fadeIn());
-		} else if ('event' in o && o['event'] == 'favorite') {
-			$("#statuses").prepend(getFavoritedStatusNode(o).hide().fadeIn());
-		} else if ('event' in o && o['event'] == 'unfavorite') {
-			$("#statuses").prepend(getUnfavoritedStatusNode(o).hide().fadeIn());
+		//3*n+0: n-th content length
+		//3*n+1: n-th content body
+		if (latest == undefined) {
+			var from = 1;
 		} else {
-			$("#statuses").prepend($("<dl></dl>").append($("<dt>JSON</dt>")));
+			for (var from = lines.length - 3; ; from -= 3) {
+				if (lines[from] == latest) {
+					from += 3;
+					break;
+				}
+			}
 		}
+		for (var to = lines.length - 3; from <= to; from += 3) {
+			var o = JSON.parse(lines[from]);
+			if ('text' in o) {
+				$("#statuses").prepend(getStatusNode(o).hide().fadeIn());
+			} else if ('event' in o && o['event'] == 'favorite') {
+				$("#statuses").prepend(getFavoritedStatusNode(o).hide().fadeIn());
+			} else if ('event' in o && o['event'] == 'unfavorite') {
+				$("#statuses").prepend(getUnfavoritedStatusNode(o).hide().fadeIn());
+			} else {
+				$("#statuses").prepend($("<dl></dl>").append($("<dt>JSON</dt>")));
+			}
+		}
+		latest = lines[to];
 	}, 500);
 });
 </script>
