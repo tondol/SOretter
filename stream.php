@@ -32,7 +32,7 @@ $connection->stream('https://userstream.twitter.com/1.1/user.json', array(), fun
 	}
 	$chunk = json_encode($response);
 	echo sprintf("%x", strlen($chunk)) . "\r\n";
-	echo $chunk . "\r\n\r\n";
+	echo $chunk . "\r\n";
 	ob_flush(); flush();
 	return true;
 });
