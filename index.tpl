@@ -26,7 +26,7 @@
 $(function () {
 	var connect = function () {
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET', 'https://tmp.tondol.com/soretter/stream.php', true);
+		xhr.open('GET', 'https://tmp.tondol.com/ssoretter/stream.php', true);
 		xhr.send(null);
 		return xhr;
 	};
