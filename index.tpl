@@ -6,9 +6,15 @@
 <script type="text/javascript" src="./stream.js"></script>
 <link rel="stylesheet" type="text/css" href="./fonts-min.css" />
 <link rel="stylesheet" type="text/css" href="./stream.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/tmp-notice.css" />
 </head>
 <body>
 
+<div class="tmp-notice tmp-notice--first" role="status">
+  <strong class="tmp-notice__title">Twitter API の仕様変更により、Soretter / Ssoretter は現在利用できません。</strong>
+  <span class="tmp-notice__text">復旧の見込みが立ちましたら、このページでお知らせします。長らくのご利用、ありがとうございました。</span>
+</div>
 <header>
 <?php if ($logged_in): ?>
 	<h1>SOretter: Logged in</h1>
